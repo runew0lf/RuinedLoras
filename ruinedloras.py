@@ -1,7 +1,9 @@
 import os
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from tqdm import tqdm
 
+print("Loading BLIP Captioner...")
 model_id = "Salesforce/blip-image-captioning-base"
 model = BlipForConditionalGeneration.from_pretrained(model_id)
 processor = BlipProcessor.from_pretrained(model_id)
@@ -18,16 +20,18 @@ def generate_caption(image):
     return tag_prefix + ", " + processor.decode(out[0], skip_special_tokens=True)
 
 
-for filename in os.listdir(image_directory):
+print("Flipping Images...")
+for filename in tqdm(os.listdir(image_directory)):
     if os.path.isfile(os.path.join(image_directory, filename)):
         img = Image.open(os.path.join(image_directory, filename))
         flipped_img = img.transpose(Image.FLIP_LEFT_RIGHT)
         flipped_img.save(os.path.join(image_directory, f"flipped_{filename}"))
 
-for filename in os.listdir(image_directory):
+print("Renaming and generating captions...")
+for filename in tqdm(os.listdir(image_directory)):
     if os.path.isfile(os.path.join(image_directory, filename)):
         new_name = f"{counter}{os.path.splitext(filename)[1]}"
-        os.rename(
+        os.replace(
             os.path.join(image_directory, filename),
             os.path.join(image_directory, new_name),
         )
