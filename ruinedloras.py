@@ -1,6 +1,6 @@
 from PIL import Image
 from tqdm import tqdm
-from modules.utils import get_image_files, generate_caption
+from modules.utils import generate_caption
 from pathlib import Path
 
 counter = 1
