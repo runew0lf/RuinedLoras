@@ -19,8 +19,13 @@ print("Renaming and generating captions...")
 for filename in tqdm(image_directory.iterdir()):
     if filename.is_file():
         new_name = f"{counter}{filename.suffix}"
-        (image_directory / filename.name).rename(image_directory / new_name)
-        img = Image.open(image_directory / new_name)
+        new_file_path = image_directory / new_name
+        while new_file_path.exists():
+            counter += 1
+            new_name = f"{counter}{filename.suffix}"
+            new_file_path = image_directory / new_name
+        (image_directory / filename.name).rename(new_file_path)
+        img = Image.open(new_file_path)
         caption = generate_caption(img, tag_prefix)
         with open(image_directory / f"{counter}.txt", "w") as f:
             f.write(caption)
